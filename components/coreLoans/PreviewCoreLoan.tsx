@@ -54,6 +54,7 @@ const PreviewCoreLoan = ({ loan }: LoanProps) => {
       scale: 2,
       useCORS: true,
       backgroundColor: "#ffffff",
+      scrollY: -window.scrollY, // fix scroll offset
     });
 
     const imgData = canvas.toDataURL("image/png");
@@ -65,20 +66,32 @@ const PreviewCoreLoan = ({ loan }: LoanProps) => {
     const imgProps = pdf.getImageProperties(imgData);
     const imgHeight = (imgProps.height * pageWidth) / imgProps.width;
 
-    let position = 0;
+    const totalPages = Math.ceil(imgHeight / pageHeight);
 
-    if (imgHeight <= pageHeight) {
-      pdf.addImage(imgData, "PNG", 0, 0, pageWidth, imgHeight);
-    } else {
-      while (position < imgHeight) {
-        pdf.addImage(imgData, "PNG", 0, -position, pageWidth, imgHeight);
-        position += pageHeight;
-        if (position < imgHeight) pdf.addPage();
+    for (let page = 0; page < totalPages; page++) {
+      const offsetY = -(page * pageHeight);
+
+      pdf.addImage(imgData, "PNG", 0, offsetY, pageWidth, imgHeight);
+
+      // 🔐 Add one watermark per page
+      pdf.setFontSize(32);
+      pdf.setTextColor(200);
+      pdf.setDrawColor(255);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("NFVCB Cooperative", pageWidth / 2, pageHeight / 2, {
+        align: "center",
+        angle: -30,
+      });
+
+      if (page < totalPages - 1) {
+        pdf.addPage();
       }
     }
 
     pdf.save(`Loan_${loan.name}.pdf`);
   };
+  
+  
 
   const [previewPDF, setPreviewPDF] = useState(false);
 
@@ -89,7 +102,7 @@ const PreviewCoreLoan = ({ loan }: LoanProps) => {
           <div className='overflow-x-auto w-full'>
             <div
               ref={printRef}
-              className='relative bg-white text-black mx-auto px-6 py-8 shadow-md rounded-md'
+              className='relative bg-white text-black mx-auto px-6 py-8 shadow-md rounded-md break-inside-avoid page-break-avoid'
               style={{
                 width: "794px", // A4 width
                 minHeight: "1123px", // A4 height
@@ -294,7 +307,11 @@ const PreviewCoreLoan = ({ loan }: LoanProps) => {
 
           {/* Buttons */}
           <div className='flex flex-col sm:flex-row gap-4 justify-center mt-6 print:hidden'>
-            <Button variant={'outline'} onClick={() => setPreviewPDF(!previewPDF)}>View Raw Data</Button>
+            <Button
+              variant={"outline"}
+              onClick={() => setPreviewPDF(!previewPDF)}>
+              View Raw Data
+            </Button>
             <Button onClick={handleDownloadPdf}>
               <Download className='w-4 h-4 mr-2' />
               Download PDF
