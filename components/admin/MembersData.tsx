@@ -52,7 +52,7 @@ export default function MembersData() {
         <div>
           <div className='flex flex-col sm:flex-row justify-between items-center gap-3'>
             <div className='flex items-center gap-3'>
-              <h1 className='text-2xl font-bold'>Member Records</h1>
+              <h1 className='text-2xl font-bold'>Members Record</h1>
               <Badge variant='secondary' className='px-3 py-1'>
                 {members?.length || 0} members
               </Badge>
@@ -106,7 +106,7 @@ function MemberCard({ member }: { member: Member }) {
         <div className='flex justify-between gap-2'>
          
             <div className='leading-5'>
-              <h3 className='font-semibold text-xl sm:text-2xl'>{member.name}</h3>
+              <h3 className='font-semibold sm:text-2xl'>{member.name}</h3>
               <div className='flex flex-col text-muted-foreground'>
                 <p>Joined {dayjs(member.dateJoined).format("MMM YYYY")}</p>
                 <p className='text-muted-foreground'>PIN: {member.pin}</p>
