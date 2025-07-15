@@ -51,7 +51,7 @@ export default function MembersData() {
       <div className='flex flex-col gap-6'>
         <div>
           <div className='flex flex-col sm:flex-row justify-between items-center gap-3'>
-            <div className='flex items-center gap-3'>
+            <div className='flex flex-col items-center sm:items-start gap-1'>
               <h1 className='text-2xl font-bold'>Members Record</h1>
               <Badge variant='secondary' className='px-3 py-1'>
                 {members?.length || 0} members
