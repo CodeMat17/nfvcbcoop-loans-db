@@ -10,7 +10,7 @@ export default function AdminLoansPage() {
       <h1 className='text-4xl font-bold mb-6 text-center'>Core Loans</h1>
 
       <Tabs defaultValue='processing'>
-        <TabsList className='mb-4 px-2 py-7 gap-3'>
+        <TabsList className='mb-4 px-2 py-7 gap-3 w-full'>
           <TabsTrigger asChild className='py-5' value='processing'>
             <button className='px-4'>Request</button>
           </TabsTrigger>

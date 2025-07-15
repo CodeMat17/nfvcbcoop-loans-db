@@ -1,10 +1,9 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NFVCB Coop Loans DB",
-  description: "This is the NFVCB Coop Loans DB",
+  title: "NFVCB COOP",
+  description: "NFVCB COOP",
 };
 
 export default function RootLayout({
@@ -31,14 +30,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ConvexClientProvider>
-          <SidebarProvider>
-            <AppSidebar />
-            <main className='w-full'>
-              <SidebarTrigger />
-              {children}
-            </main>
-            <Toaster />
-          </SidebarProvider>
+          <ClerkProvider>
+            {children}
+            {/* <LayoutProvider></LayoutProvider> */}
+          </ClerkProvider>
+          <Toaster />
         </ConvexClientProvider>
       </body>
     </html>

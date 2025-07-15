@@ -1,40 +1,39 @@
-"use client";
+import { Button } from "@/components/ui/button";
+import { checkRole } from "@/utils/roles";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
-import ApprovedLoansContent from "@/components/ApprovedLoansContent";
-import ClearedLoansContent from "@/components/ClearedLoansContent";
-import ProcessingLoansContent from "@/components/ProcessingLoansContent";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+export default async function HomePage() {
+  const isAdmin = await checkRole("admin");
+  if (isAdmin) {
+    redirect("/admin");
+  }
 
-export default function AdminLoansPage() {
   return (
-    <div className='w-full max-w-6xl mx-auto px-4 py-8'>
-      <h1 className='text-4xl font-bold mb-6 text-center'>Loan Requests</h1>
+    <div className=' w-full max-w-3xl mx-auto px-4 py-20 flex flex-col items-center justify-center'>
+      <p className='text-xl font-medium  text-center text-muted-foreground '>
+        Welcome to the
+      </p>
+      <h1 className='text-4xl font-bold mb-3 mt-4 text-center'>
+        NFVCB Cooperative Loan Manager <br /> (Admin Dashboard)
+      </h1>
+      <p className='text-lg text-slate-600 mb-8 text-center'>
+       YOU MUST BE AN ADMIN TO HAVE ACCESS TO THE DASHBOARD
+      </p>
+      <div className='space-y-4 flex flex-col items-center justify-center mt-12'>
+        <Button asChild>
+          <Link href='/sign-in' className=''>
+            Sign In
+          </Link>
+        </Button>
 
-      <Tabs defaultValue='processing'>
-        <TabsList className='mb-4 px-2 py-7 gap-3'>
-          <TabsTrigger asChild className='py-5' value='processing'>
-            <button className='px-4'>Request</button>
-          </TabsTrigger>
-          <TabsTrigger asChild className='py-5' value='approved'>
-            <button className='px-4'>Approved</button>
-          </TabsTrigger>
-          <TabsTrigger asChild className='py-5' value='cleared'>
-            <button className='px-4'>Cleared</button>
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value='processing'>
-          <ProcessingLoansContent />
-        </TabsContent>
-
-        <TabsContent value='approved'>
-          <ApprovedLoansContent />
-        </TabsContent>
-
-        <TabsContent value='cleared'>
-          <ClearedLoansContent />
-        </TabsContent>
-      </Tabs>
+        <p className='text-sm text-slate-500'>
+          Don&apos;t have an account?{" "}
+          <Link href='/sign-up' className='text-slate-900 hover:underline'>
+            Sign Up
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

@@ -31,7 +31,8 @@ export default defineSchema({
     .index("by_userId", ["userId"])
     .index("by_status", ["status"])
     .index("by_userId_status", ["userId", "status"]),
-
+  
+  
   coreLoans: defineTable({
     userId: v.id("users"),
     name: v.string(),

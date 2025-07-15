@@ -1,17 +1,18 @@
 "use client";
 
-import AddMember from "@/components/AddMember";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-import UpdateRecords from "@/components/UpdateRecords";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import AddMember from "@/components/AddMember";
 import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
+import dayjs from "dayjs";
+import UpdateRecords from "@/components/UpdateRecords";
+import { Id } from "@/convex/_generated/dataModel";
 
 type Member = {
   _id: Id<"users">;
@@ -31,7 +32,10 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
-export default function MemberRecordsPage() {
+export default function MembersData() {
+  const { user } = useUser();
+  console.log("User: ", user);
+
   const members = useQuery(api.users.getAllUsers);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -43,10 +47,10 @@ export default function MemberRecordsPage() {
     ) || [];
 
   return (
-    <div className='w-full max-w-4xl mx-auto py-8 px-4'>
+    <div className='w-full max-w-4xl mx-auto py-8 px-3'>
       <div className='flex flex-col gap-6'>
         <div>
-          <div className='flex flex-col sm:flex-row justify-between gap-3'>
+          <div className='flex flex-col sm:flex-row justify-between items-center gap-3'>
             <div className='flex items-center gap-3'>
               <h1 className='text-2xl font-bold'>Member Records</h1>
               <Badge variant='secondary' className='px-3 py-1'>
@@ -54,7 +58,6 @@ export default function MemberRecordsPage() {
               </Badge>
             </div>
 
-        
             <AddMember />
           </div>
           <div className='mt-4 relative w-full '>
@@ -100,21 +103,16 @@ function MemberCard({ member }: { member: Member }) {
   return (
     <Card className='hover:shadow-md transition-shadow'>
       <CardContent>
-        <div className='flex items-center justify-between gap-4'>
-          <div className='flex items-center gap-4'>
-            <Avatar className='h-12 w-12'>
-              <AvatarFallback>
-                {member.name.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+        <div className='flex justify-between gap-2'>
+         
             <div className='leading-5'>
-              <h3 className='font-semibold text-xl'>{member.name}</h3>
+              <h3 className='font-semibold text-xl sm:text-2xl'>{member.name}</h3>
               <div className='flex flex-col text-muted-foreground'>
-                <p>Date joined {member.dateJoined}</p>
+                <p>Joined {dayjs(member.dateJoined).format("MMM YYYY")}</p>
                 <p className='text-muted-foreground'>PIN: {member.pin}</p>
               </div>
             </div>
-          </div>
+         
 
           <UpdateRecords
             id={member._id}

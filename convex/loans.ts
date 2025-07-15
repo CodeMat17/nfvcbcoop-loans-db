@@ -104,6 +104,7 @@ export const getLoansByStatus = query({
     const loans = await ctx.db
       .query("loans")
       .withIndex("by_status", (q) => q.eq("status", status))
+      .order("desc")
       .collect();
 
     const usersMap = new Map<string, string | null>();
@@ -140,5 +141,95 @@ export const rejectLoan = mutation({
   },
   handler: async (ctx, { loanId }) => {
     await ctx.db.delete(loanId);
+  },
+});
+
+// ===================
+
+export const importLoanByPin = mutation({
+  args: {
+    pin: v.string(),
+    amount: v.number(),
+    approvedDate: v.string(),
+    approvedBy: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    try {
+      // Step 1: Find user by PIN
+      const user = await ctx.db
+        .query("users")
+        .withIndex("by_pin", (q) => q.eq("pin", args.pin))
+        .unique();
+
+      if (!user) {
+        return {
+          success: false,
+          error: `No user found with PIN: ${args.pin}`,
+        };
+      }
+
+      // Step 2: Parse and validate date
+      const approvedDate = new Date(args.approvedDate);
+      if (isNaN(approvedDate.getTime())) {
+        return {
+          success: false,
+          error: `Invalid approvedDate for ${args.pin}`,
+        };
+      }
+
+      const approvedDateISO = approvedDate.toISOString();
+      const dateApplied = approvedDateISO;
+
+      // Calculate dueDate = approvedDate + 6 months
+      const due = new Date(approvedDate);
+      due.setMonth(due.getMonth() + 6);
+      const dueDate = due.toISOString();
+
+      // Step 3: Prevent duplicate (optional)
+      const existing = await ctx.db
+        .query("loans")
+        .withIndex("by_userId", (q) => q.eq("userId", user._id))
+        .collect();
+
+      const isDuplicate = existing.some(
+        (loan) =>
+          loan.amount === args.amount &&
+          loan.approvedDate === approvedDateISO &&
+          loan.status === "approved"
+      );
+
+      if (isDuplicate) {
+        return {
+          success: false,
+          error: `Duplicate loan found for ${user.name} (${args.pin})`,
+        };
+      }
+
+      // Step 4: Insert loan
+      const loanId = await ctx.db.insert("loans", {
+        userId: user._id,
+        amount: args.amount,
+        dateApplied,
+        approvedDate: approvedDateISO,
+        dueDate,
+        status: "approved",
+        approvedBy: args.approvedBy,
+      });
+
+      return {
+        success: true,
+        loanId,
+        userName: user.name,
+        message: `Loan imported for ${user.name}`,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unknown error occurred during import",
+      };
+    }
   },
 });

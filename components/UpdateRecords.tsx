@@ -18,6 +18,7 @@ import { ChangeEvent, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import dayjs from "dayjs";
 
 type Props = {
   id: Id<"users">;
@@ -97,7 +98,7 @@ const UpdateRecords = ({ id, userName, joined, total, monthly }: Props) => {
                 Date Joined
               </label>
               <Input
-                value={dateJoined}
+                value={dayjs(dateJoined).format("MMM, YYYY")}
                 onChange={(e) => setDateJoined(e.target.value)}
               />
             </div>

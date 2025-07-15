@@ -82,7 +82,7 @@ const AddMember = () => {
     <div>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogTrigger asChild>
-          <Button className='w-full'>Add Member</Button>
+          <Button>Add Member</Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
