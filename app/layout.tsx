@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "NFVCB COOP",
-  description: "NFVCB COOP",
+  description: "Admin Dashboard",
 };
 
 export default function RootLayout({
